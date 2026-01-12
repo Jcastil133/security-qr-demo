@@ -3,64 +3,348 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>QR Code Security Demo</title>
-
+  <title>Security Awareness Simulation</title>
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      margin: 0;
-      padding: 24px;
-      background: #f7f7f7;
-      color: #222;
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --text:#1b1f24;
+      --muted:#5b6673;
+      --border:#e5e9f0;
+      --accent:#E20074; /* T-Mobile magenta */
+      --warn:#b42318;
+      --ok:#067647;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .wrap{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .shell{
+      width:100%;
+      max-width:980px;
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:18px;
+    }
+    @media (max-width: 860px){
+      .shell{grid-template-columns:1fr}
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow: 0 10px 26px rgba(16,24,40,.08);
+      padding:22px;
+    }
+    .banner{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(226,0,116,.25);
+      background: rgba(226,0,116,.08);
+      margin-bottom:14px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid rgba(226,0,116,.35);
+      color:var(--accent);
+      background:#fff;
+      white-space:nowrap;
+      font-weight:600;
+    }
+    h1{margin:0 0 8px; font-size:22px}
+    .sub{margin:0 0 16px; color:var(--muted); line-height:1.45}
+
+    .form{
+      margin-top:10px;
+      display:grid;
+      gap:10px;
+    }
+    label{font-size:12px; color:var(--muted)}
+    .field{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px 12px;
+      font-size:14px;
+      background:#fbfcfe;
+    }
+    .field[readonly]{color:#9aa4b2}
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+    .btn{
+      border:0;
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:700;
+      cursor:pointer;
+      background:var(--accent);
+      color:#fff;
+      min-width:140px;
+    }
+    .btn:disabled{opacity:.65; cursor:not-allowed}
+    .link{
+      color:var(--muted);
+      font-size:13px;
+      text-decoration:underline;
+      cursor:pointer;
+      user-select:none;
     }
 
-    .card {
-      max-width: 720px;
-      margin: 40px auto;
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    .right h2{margin:0 0 10px; font-size:16px}
+    .list{margin:0; padding-left:18px; color:var(--muted); line-height:1.5}
+    .callout{
+      margin-top:14px;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background:#fff;
     }
 
-    h1 {
-      margin-top: 0;
-      font-size: 28px;
+    /* Modal */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(10,12,16,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      z-index:50;
     }
-
-    p {
-      font-size: 16px;
-      line-height: 1.5;
+    .modal{
+      width:100%;
+      max-width:640px;
+      background:var(--card);
+      border-radius:18px;
+      border:1px solid var(--border);
+      box-shadow: 0 18px 46px rgba(16,24,40,.22);
+      padding:20px;
     }
+    .modalTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .close{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:12px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .spinRow{
+      display:flex; gap:12px; align-items:center;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#fbfcfe;
+      margin:12px 0;
+    }
+    .spinner{
+      width:20px; height:20px;
+      border:3px solid #dbe2ea;
+      border-top-color: var(--accent);
+      border-radius:50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .note {
-      margin-top: 24px;
-      padding: 16px;
-      border-radius: 12px;
-      background: #f1f1f1;
-      font-size: 14px;
+    .reveal{
+      display:none;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(180,35,24,.25);
+      background: rgba(180,35,24,.06);
+    }
+    .reveal h3{margin:0 0 6px; color:var(--warn)}
+    .reveal p{margin:0; color:var(--text); line-height:1.45}
+    .safe{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(6,118,71,.25);
+      background: rgba(6,118,71,.06);
+    }
+    .safe strong{color:var(--ok)}
+    .footer{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
     }
   </style>
 </head>
-
 <body>
-  <div class="card">
-    <h1>You just scanned a QR code.</h1>
+  <div class="wrap">
+    <div class="shell">
+      <!-- Left: Simulation "login-ish" card -->
+      <div class="card">
+        <div class="banner">
+          <span class="badge">SIMULATION</span>
+          <div>
+            <div style="font-weight:800; color:var(--accent); margin-bottom:2px;">Security Awareness Demo</div>
+            <div style="color:var(--muted); font-size:13px; line-height:1.35;">
+              This page does <b>not</b> collect credentials. It’s a safe, controlled training experience.
+            </div>
+          </div>
+        </div>
 
-    <p>
-      This page confirms that your QR code and GitHub Pages site are working.
-    </p>
+        <h1>Sign in to continue</h1>
+        <p class="sub">
+          You scanned a QR code to reach this page. In real attacks, QR codes can disguise destinations and
+          push users toward risky actions on mobile devices.
+        </p>
 
-    <p>
-      Nothing harmful is happening here — this is a safe demo environment.
-    </p>
+        <div class="form" aria-label="simulation form">
+          <div>
+            <label>Email</label>
+            <input class="field" type="email" value="(not collected in this simulation)" readonly />
+          </div>
+          <div>
+            <label>Password</label>
+            <input class="field" type="password" value="********" readonly />
+          </div>
 
-    <div class="note">
-      <strong>Next step:</strong><br>
-      Once you see this page on your phone, we’ll replace it with an
-      interactive security awareness experience.
+          <div class="row">
+            <button class="btn" id="loginBtn">Log in</button>
+            <span class="link" id="whyLink">Why am I seeing this?</span>
+          </div>
+
+          <div class="footer">
+            Trainer note: This is intentionally “login-like” to show how easily users can be nudged into trusting a QR flow.
+            No data is captured or transmitted.
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Awareness + transition -->
+      <div class="card right">
+        <h2>What this is teaching (in 30 seconds)</h2>
+        <ul class="list">
+          <li>QR codes can hide where you’re going until <em>after</em> you scan.</li>
+          <li>Mobile devices are a top target (QR phishing, SMS phishing, risky links, malicious apps).</li>
+          <li>Security works best as layers: <b>Identity + Device + Network</b>.</li>
+        </ul>
+
+        <div class="callout">
+          <h2>Where our solutions fit</h2>
+          <ul class="list">
+            <li><b>Identity:</b> Entra ID / SSO / MFA controls who can access.</li>
+            <li><b>Device:</b> MTD (ex: Ivanti) helps detect mobile threats (QR phishing, risky links/apps).</li>
+            <li><b>Network:</b> SASE helps enforce secure access and block threats on Wi-Fi or cellular; HSI/router security protects entry points.</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <h2>Today’s goal</h2>
+          <p class="sub" style="margin:0;">
+            You don’t need to be a security expert. You just need to hear the triggers, ask 2–3 safe questions,
+            and bring the SE in early for qualified opportunities.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- Modal -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="simulation modal">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <div style="font-weight:900; font-size:16px;">Simulation Result</div>
+          <div style="color:var(--muted); font-size:13px; margin-top:2px;">
+            Nothing harmful happened. This is an awareness demo.
+          </div>
+        </div>
+        <button class="close" id="closeBtn">Close</button>
+      </div>
+
+      <div class="spinRow" id="spinRow">
+        <div class="spinner" aria-hidden="true"></div>
+        <div style="color:var(--muted); font-size:13px;">
+          Processing… (this is how “normal” flows create trust)
+        </div>
+      </div>
+
+      <div class="reveal" id="reveal">
+        <h3>Here’s the point:</h3>
+        <p>
+          In a real attack, this is where a user could be pushed to a fake login page, a malicious link chain,
+          or an app install—often on a mobile device with less visibility.
+        </p>
+      </div>
+
+      <div class="safe">
+        <strong>Safe takeaway:</strong>
+        QR-code threats are why we talk about <b>Identity + Device + Network</b> together—
+        SSO/MFA, Mobile Threat Defense, and SASE/edge protection reduce risk and limit blast radius.
+      </div>
+
+      <div class="footer">
+        Training note: This page does not capture keystrokes, store input, or send data anywhere.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const loginBtn = document.getElementById("loginBtn");
+    const overlay = document.getElementById("overlay");
+    const closeBtn = document.getElementById("closeBtn");
+    const spinRow = document.getElementById("spinRow");
+    const reveal = document.getElementById("reveal");
+    const whyLink = document.getElementById("whyLink");
+
+    function openModal(){
+      overlay.style.display = "flex";
+      // Reset
+      spinRow.style.display = "flex";
+      reveal.style.display = "none";
+      // Reveal after a moment
+      setTimeout(() => {
+        spinRow.style.display = "none";
+        reveal.style.display = "block";
+      }, 1100);
+    }
+
+    function closeModal(){
+      overlay.style.display = "none";
+    }
+
+    loginBtn.addEventListener("click", openModal);
+    closeBtn.addEventListener("click", closeModal);
+    overlay.addEventListener("click", (e) => {
+      if(e.target === overlay) closeModal();
+    });
+
+    whyLink.addEventListener("click", () => {
+      alert("This is a safe training simulation. Real QR-code attacks often rely on trust + speed on mobile devices. The lesson: verify destinations and use layered controls (Identity + Device + Network).");
+    });
+  </script>
 </body>
 </html>
-
