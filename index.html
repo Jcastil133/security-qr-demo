@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Security Awareness Simulation</title>
+  <meta name="description" content="A safe cybersecurity awareness simulation. No credentials are collected." />
   <style>
     :root{
       --bg:#f5f7fb;
@@ -14,11 +15,12 @@
       --accent:#E20074; /* T-Mobile magenta */
       --warn:#b42318;
       --ok:#067647;
+      --shadow: 0 10px 26px rgba(16,24,40,.08);
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
       background:var(--bg);
       color:var(--text);
     }
@@ -27,104 +29,176 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:24px;
+      padding:28px;
     }
-    .shell{
+    .container{
       width:100%;
       max-width:980px;
-      display:grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap:18px;
     }
-    @media (max-width: 860px){
-      .shell{grid-template-columns:1fr}
+    .topBar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
     }
-    .card{
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(226,0,116,.25);
+      background: rgba(226,0,116,.08);
+      color:var(--accent);
+      font-weight:800;
+      font-size:12px;
+      letter-spacing:.2px;
+      white-space:nowrap;
+    }
+    .status{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .hero{
       background:var(--card);
       border:1px solid var(--border);
       border-radius:18px;
-      box-shadow: 0 10px 26px rgba(16,24,40,.08);
+      box-shadow:var(--shadow);
       padding:22px;
     }
-    .banner{
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid rgba(226,0,116,.25);
-      background: rgba(226,0,116,.08);
-      margin-bottom:14px;
-    }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:4px 10px;
-      border-radius:999px;
-      font-size:12px;
-      border:1px solid rgba(226,0,116,.35);
-      color:var(--accent);
-      background:#fff;
-      white-space:nowrap;
-      font-weight:600;
-    }
-    h1{margin:0 0 8px; font-size:22px}
-    .sub{margin:0 0 16px; color:var(--muted); line-height:1.45}
-
-    .form{
-      margin-top:10px;
+    .heroGrid{
       display:grid;
-      gap:10px;
+      grid-template-columns: 1.05fr .95fr;
+      gap:18px;
+      margin-top:14px;
     }
-    label{font-size:12px; color:var(--muted)}
-    .field{
-      width:100%;
+    @media (max-width: 900px){
+      .heroGrid{grid-template-columns:1fr}
+    }
+    h1{
+      margin:0 0 8px;
+      font-size:26px;
+      line-height:1.15;
+    }
+    .sub{
+      margin:0 0 14px;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:15px;
+    }
+
+    .card{
+      background:#fff;
       border:1px solid var(--border);
-      border-radius:12px;
-      padding:12px 12px;
-      font-size:14px;
-      background:#fbfcfe;
+      border-radius:16px;
+      padding:16px;
     }
-    .field[readonly]{color:#9aa4b2}
-    .row{
+    .card h2{
+      margin:0 0 10px;
+      font-size:16px;
+    }
+    .list{
+      margin:0;
+      padding-left:18px;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:14px;
+    }
+    .callout{
+      border-left:4px solid var(--accent);
+      background: rgba(226,0,116,.06);
+      padding:12px 12px;
+      border-radius:12px;
+      margin-top:12px;
+      color:var(--text);
+    }
+    .callout b{ color:var(--accent); }
+
+    /* Post-Continue reveal section */
+    .revealArea{
+      display:none;
+      margin-top:16px;
+      border-top:1px dashed var(--border);
+      padding-top:16px;
+    }
+    .revealTitle{
+      font-weight:900;
+      margin:0 0 8px;
+      font-size:16px;
+    }
+    .revealGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+      margin-top:10px;
+    }
+    @media (max-width: 900px){
+      .revealGrid{grid-template-columns:1fr}
+    }
+    .btnRow{
       display:flex;
       gap:10px;
-      align-items:center;
-      justify-content:space-between;
       flex-wrap:wrap;
-      margin-top:6px;
+      margin-top:10px;
     }
     .btn{
       border:0;
       border-radius:12px;
       padding:12px 14px;
-      font-weight:700;
+      font-weight:800;
       cursor:pointer;
       background:var(--accent);
       color:#fff;
-      min-width:140px;
+      min-width:200px;
+    }
+    .btn.secondary{
+      background:#111827;
+      min-width:160px;
     }
     .btn:disabled{opacity:.65; cursor:not-allowed}
-    .link{
+
+    .outcomeBox{
+      display:none;
+      margin-top:12px;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#fbfcfe;
+    }
+    .outcomeTag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+    .outcomeText{
+      margin:0;
+      color:var(--text);
+      line-height:1.5;
+      font-size:14px;
+    }
+    .map{
+      margin-top:10px;
+      padding:12px;
+      border-radius:12px;
+      background:#fff;
+      border:1px solid var(--border);
       color:var(--muted);
       font-size:13px;
-      text-decoration:underline;
-      cursor:pointer;
-      user-select:none;
+      line-height:1.45;
+    }
+    .map b{ color:var(--text); }
+
+    .footerNote{
+      margin-top:12px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.45;
     }
 
-    .right h2{margin:0 0 10px; font-size:16px}
-    .list{margin:0; padding-left:18px; color:var(--muted); line-height:1.5}
-    .callout{
-      margin-top:14px;
-      padding:14px;
-      border-radius:16px;
-      border:1px solid var(--border);
-      background:#fff;
-    }
-
-    /* Modal */
+    /* Modal overlay */
     .overlay{
       position:fixed; inset:0;
       background: rgba(10,12,16,.55);
@@ -136,12 +210,12 @@
     }
     .modal{
       width:100%;
-      max-width:640px;
+      max-width:520px;
       background:var(--card);
       border-radius:18px;
       border:1px solid var(--border);
       box-shadow: 0 18px 46px rgba(16,24,40,.22);
-      padding:20px;
+      padding:18px;
     }
     .modalTop{
       display:flex;
@@ -150,21 +224,92 @@
       gap:12px;
       margin-bottom:10px;
     }
+    .modalTitle{
+      font-weight:950;
+      font-size:16px;
+      margin:0;
+    }
+    .modalSub{
+      margin:3px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
     .close{
       border:1px solid var(--border);
       background:#fff;
       border-radius:12px;
       padding:8px 10px;
       cursor:pointer;
+      font-weight:900;
+    }
+    .simBadge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid rgba(226,0,116,.35);
+      color:var(--accent);
+      background:#fff;
+      white-space:nowrap;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+    .fieldWrap{
+      margin-top:10px;
+      display:grid;
+      gap:10px;
+    }
+    label{
+      font-size:12px;
+      color:var(--muted);
       font-weight:700;
     }
+    .field{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px 12px;
+      font-size:14px;
+      background:#fbfcfe;
+    }
+    .field[disabled]{color:#6b7280}
+    .modalBtnRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .primaryBtn{
+      border:0;
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:900;
+      cursor:pointer;
+      background:var(--accent);
+      color:#fff;
+      min-width:160px;
+    }
+    .link{
+      color:var(--muted);
+      font-size:13px;
+      text-decoration:underline;
+      cursor:pointer;
+      user-select:none;
+    }
     .spinRow{
-      display:flex; gap:12px; align-items:center;
+      display:none;
+      gap:12px;
+      align-items:center;
       padding:12px 12px;
       border-radius:14px;
       border:1px solid var(--border);
       background:#fbfcfe;
-      margin:12px 0;
+      margin-top:12px;
     }
     .spinner{
       width:20px; height:20px;
@@ -175,175 +320,243 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .reveal{
-      display:none;
-      padding:14px;
-      border-radius:16px;
-      border:1px solid rgba(180,35,24,.25);
-      background: rgba(180,35,24,.06);
-    }
-    .reveal h3{margin:0 0 6px; color:var(--warn)}
-    .reveal p{margin:0; color:var(--text); line-height:1.45}
-    .safe{
+    .safeNote{
       margin-top:12px;
-      padding:12px 14px;
+      padding:12px 12px;
       border-radius:14px;
       border:1px solid rgba(6,118,71,.25);
       background: rgba(6,118,71,.06);
+      color:var(--text);
+      font-size:13px;
+      line-height:1.45;
     }
-    .safe strong{color:var(--ok)}
-    .footer{
-      margin-top:14px;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.4;
-    }
+    .safeNote b{ color:var(--ok); }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <div class="shell">
-      <!-- Left: Simulation "login-ish" card -->
-      <div class="card">
-        <div class="banner">
-          <span class="badge">SIMULATION</span>
-          <div>
-            <div style="font-weight:800; color:var(--accent); margin-bottom:2px;">Security Awareness Demo</div>
-            <div style="color:var(--muted); font-size:13px; line-height:1.35;">
-              This page does <b>not</b> collect credentials. It’s a safe, controlled training experience.
-            </div>
-          </div>
-        </div>
-
-        <h1>Sign in to continue</h1>
-        <p class="sub">
-          You scanned a QR code to reach this page. In real attacks, QR codes can disguise destinations and
-          push users toward risky actions on mobile devices.
-        </p>
-
-        <div class="form" aria-label="simulation form">
-          <div>
-            <label>Email</label>
-            <input class="field" type="email" value="(not collected in this simulation)" readonly />
-          </div>
-          <div>
-            <label>Password</label>
-            <input class="field" type="password" value="********" readonly />
-          </div>
-
-          <div class="row">
-            <button class="btn" id="loginBtn">Log in</button>
-            <span class="link" id="whyLink">Why am I seeing this?</span>
-          </div>
-
-          <div class="footer">
-            Trainer note: This is intentionally “login-like” to show how easily users can be nudged into trusting a QR flow.
-            No data is captured or transmitted.
-          </div>
-        </div>
+    <div class="container">
+      <div class="topBar">
+        <div class="pill">SIMULATION • Security Awareness Demo</div>
+        <div class="status" id="statusText">Safe training environment — no data is collected.</div>
       </div>
 
-      <!-- Right: Awareness + transition -->
-      <div class="card right">
-        <h2>What this is teaching (in 30 seconds)</h2>
-        <ul class="list">
-          <li>QR codes can hide where you’re going until <em>after</em> you scan.</li>
-          <li>Mobile devices are a top target (QR phishing, SMS phishing, risky links, malicious apps).</li>
-          <li>Security works best as layers: <b>Identity + Device + Network</b>.</li>
-        </ul>
+      <div class="hero">
+        <h1>You scanned a QR code.</h1>
+        <p class="sub">
+          In real attacks, QR codes can hide destinations and push users toward risky actions on mobile devices.
+          This is a <b>safe</b> training simulation designed to show why security works best in layers:
+          <b>Identity + Device + Network</b>.
+        </p>
 
-        <div class="callout">
-          <h2>Where our solutions fit</h2>
-          <ul class="list">
-            <li><b>Identity:</b> Entra ID / SSO / MFA controls who can access.</li>
-            <li><b>Device:</b> MTD (ex: Ivanti) helps detect mobile threats (QR phishing, risky links/apps).</li>
-            <li><b>Network:</b> SASE helps enforce secure access and block threats on Wi-Fi or cellular; HSI/router security protects entry points.</li>
-          </ul>
-        </div>
+        <div class="heroGrid">
+          <div class="card">
+            <h2>What this is teaching (in 30 seconds)</h2>
+            <ul class="list">
+              <li>QR codes can hide where you’re going until <em>after</em> you scan.</li>
+              <li>Mobile devices are a top target (QR phishing, SMS phishing, risky links, malicious apps).</li>
+              <li>Security works best as layers: <b>Identity + Device + Network</b>.</li>
+            </ul>
 
-        <div class="callout">
-          <h2>Today’s goal</h2>
-          <p class="sub" style="margin:0;">
-            You don’t need to be a security expert. You just need to hear the triggers, ask 2–3 safe questions,
-            and bring the SE in early for qualified opportunities.
-          </p>
+            <div class="callout">
+              <b>Today’s goal:</b> You don’t need to be a security expert. You just need to hear the triggers,
+              ask 2–3 safe questions, and bring the SE in early for qualified opportunities.
+            </div>
+
+            <div class="revealArea" id="revealArea">
+              <p class="revealTitle">Identity ≠ security (this is the point)</p>
+              <p class="sub" style="margin:0;">
+                Identity (SSO/MFA/Entra ID) helps verify <b>who</b> is accessing. It does not guarantee the <b>device</b> is safe
+                or that <b>network traffic</b> is protected on Wi-Fi/cellular. That’s why security stacks.
+              </p>
+
+              <div class="btnRow">
+                <button class="btn" id="outcomeBtn">Show a Possible Outcome</button>
+                <button class="btn secondary" id="resetBtn">Reset Demo</button>
+              </div>
+
+              <div class="outcomeBox" id="outcomeBox">
+                <div class="outcomeTag" id="outcomeTag">Outcome</div>
+                <p class="outcomeText" id="outcomeText"></p>
+                <div class="map" id="solutionMap"></div>
+              </div>
+
+              <div class="footerNote">
+                Trainer note: This simulation does not capture keystrokes, store input, or transmit data. It’s designed to show
+                how easily “normal looking” flows can build trust on mobile.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Where our solutions fit</h2>
+            <ul class="list">
+              <li><b>Identity:</b> Entra ID / SSO / MFA controls who can access.</li>
+              <li><b>Device:</b> Ivanti MDM/MTD detects mobile threats (QR phishing, risky links/apps) and enforces compliance.</li>
+              <li><b>Network:</b> T-SIMsecure helps block threats while on the T-Mobile network; SASE extends protection across Wi-Fi/cellular and enables secure app access.</li>
+            </ul>
+
+            <div class="callout" style="margin-top:12px;">
+              <b>Sales motion:</b> Start simple (T-SIMsecure) → expand when device risk shows up (Ivanti) → escalate to SE-led SASE for access/VPN/app requirements.
+            </div>
+
+            <div class="footerNote">
+              If you see “Entra ID / SSO / MFA” in discovery, treat it as a <b>trigger</b> to ask:
+              “How do you protect mobile devices and network traffic on Wi-Fi?”
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal -->
-  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="simulation modal">
+  <!-- Identity Verification Modal (generic, not Microsoft) -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Identity verification simulation">
     <div class="modal">
       <div class="modalTop">
         <div>
-          <div style="font-weight:900; font-size:16px;">Simulation Result</div>
-          <div style="color:var(--muted); font-size:13px; margin-top:2px;">
-            Nothing harmful happened. This is an awareness demo.
-          </div>
+          <div class="simBadge">SIMULATION</div>
+          <p class="modalTitle">Identity verification required</p>
+          <p class="modalSub">
+            This is a safe training prompt. <b>No credentials are collected</b> and fields are not editable.
+          </p>
         </div>
-        <button class="close" id="closeBtn">Close</button>
+        <button class="close" id="closeBtn" aria-label="Close">Close</button>
+      </div>
+
+      <div class="fieldWrap">
+        <div>
+          <label>Username</label>
+          <input class="field" type="text" value="test.user@company.com" disabled />
+        </div>
+        <div>
+          <label>Password</label>
+          <input class="field" type="password" value="password" disabled />
+        </div>
+      </div>
+
+      <div class="modalBtnRow">
+        <button class="primaryBtn" id="continueBtn">Continue</button>
+        <span class="link" id="whyLink">Why am I seeing this?</span>
       </div>
 
       <div class="spinRow" id="spinRow">
         <div class="spinner" aria-hidden="true"></div>
         <div style="color:var(--muted); font-size:13px;">
-          Processing… (this is how “normal” flows create trust)
+          Checking… (attackers rely on “normal” friction to build trust)
         </div>
       </div>
 
-      <div class="reveal" id="reveal">
-        <h3>Here’s the point:</h3>
-        <p>
-          In a real attack, this is where a user could be pushed to a fake login page, a malicious link chain,
-          or an app install—often on a mobile device with less visibility.
-        </p>
-      </div>
-
-      <div class="safe">
-        <strong>Safe takeaway:</strong>
-        QR-code threats are why we talk about <b>Identity + Device + Network</b> together—
-        SSO/MFA, Mobile Threat Defense, and SASE/edge protection reduce risk and limit blast radius.
-      </div>
-
-      <div class="footer">
-        Training note: This page does not capture keystrokes, store input, or send data anywhere.
+      <div class="safeNote">
+        <b>Safe takeaway:</b> The lesson isn’t the login — it’s the behavior. QR flows can create urgency and trust on mobile.
+        Security works best as layers: <b>Identity + Device + Network</b>.
       </div>
     </div>
   </div>
 
   <script>
-    const loginBtn = document.getElementById("loginBtn");
+    // --- Modal timing + behavior ---
     const overlay = document.getElementById("overlay");
     const closeBtn = document.getElementById("closeBtn");
-    const spinRow = document.getElementById("spinRow");
-    const reveal = document.getElementById("reveal");
+    const continueBtn = document.getElementById("continueBtn");
     const whyLink = document.getElementById("whyLink");
+    const spinRow = document.getElementById("spinRow");
+    const revealArea = document.getElementById("revealArea");
+    const statusText = document.getElementById("statusText");
+
+    let modalTimer = null;
 
     function openModal(){
       overlay.style.display = "flex";
-      // Reset
-      spinRow.style.display = "flex";
-      reveal.style.display = "none";
-      // Reveal after a moment
-      setTimeout(() => {
-        spinRow.style.display = "none";
-        reveal.style.display = "block";
-      }, 1100);
+      spinRow.style.display = "none";
     }
-
     function closeModal(){
       overlay.style.display = "none";
+      spinRow.style.display = "none";
     }
 
-    loginBtn.addEventListener("click", openModal);
+    // Open modal after 2 seconds to create natural interaction (without impersonation)
+    window.addEventListener("load", () => {
+      modalTimer = setTimeout(openModal, 2000);
+    });
+
     closeBtn.addEventListener("click", closeModal);
     overlay.addEventListener("click", (e) => {
       if(e.target === overlay) closeModal();
     });
 
     whyLink.addEventListener("click", () => {
-      alert("This is a safe training simulation. Real QR-code attacks often rely on trust + speed on mobile devices. The lesson: verify destinations and use layered controls (Identity + Device + Network).");
+      alert("This is a safe training simulation. Fields are disabled and no data is collected. The lesson: QR flows can build trust quickly on mobile. Use layered controls: Identity + Device + Network.");
+    });
+
+    continueBtn.addEventListener("click", () => {
+      // Show a brief spinner to mimic normal flows (no credential capture)
+      spinRow.style.display = "flex";
+      continueBtn.disabled = true;
+      statusText.textContent = "Continuing simulation… (no data captured)";
+
+      setTimeout(() => {
+        closeModal();
+        revealArea.style.display = "block";
+        continueBtn.disabled = false;
+        statusText.textContent = "Simulation complete — now showing the teaching moment (Identity ≠ Security).";
+        // Scroll slightly to the reveal on mobile
+        setTimeout(() => {
+          revealArea.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 250);
+      }, 1100);
+    });
+
+    // --- Outcome randomizer (impact-only, no how-to) ---
+    const outcomeBtn = document.getElementById("outcomeBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const outcomeBox = document.getElementById("outcomeBox");
+    const outcomeTag = document.getElementById("outcomeTag");
+    const outcomeText = document.getElementById("outcomeText");
+    const solutionMap = document.getElementById("solutionMap");
+
+    const outcomes = [
+      {
+        tag: "🧨 Ransomware Risk",
+        text: "A trusted-looking QR flow could lead to account takeover or unsafe access that enables ransomware impact across shared files or systems.",
+        map: "<b>Sales mapping:</b> Start with <b>T-SIMsecure</b> to reduce malicious traffic on-network. Add <b>Ivanti MTD</b> to detect risky links/apps on mobile. Escalate to <b>SE-led SASE</b> when customers need secure app access, policy controls, or VPN replacement."
+      },
+      {
+        tag: "🐟 Credential Phishing",
+        text: "QR-driven phishing can push users into revealing access details or approving prompts under pressure — especially on mobile.",
+        map: "<b>Sales mapping:</b> If they mention <b>Entra ID/SSO/MFA</b>, ask how they protect devices and traffic off-network. Lead with <b>T-SIMsecure</b> for mobile protection, expand with <b>Ivanti</b> for device enforcement, escalate to <b>SASE</b> for access controls."
+      },
+      {
+        tag: "📱 Malicious App / Mobile Compromise",
+        text: "A follow-on QR destination can nudge users into installing a risky app or granting permissions that compromise the device.",
+        map: "<b>Sales mapping:</b> This is an <b>Ivanti MTD</b> conversation (mobile threat detection + remediation). Pair with <b>T-SIMsecure</b> for network-based blocking. Bring the <b>SE</b> in if they need broader policy enforcement via <b>SASE</b>."
+      },
+      {
+        tag: "🌐 Session / Access Risk",
+        text: "Even with strong identity, access can still be abused if device posture and network controls aren’t enforced consistently on Wi-Fi/cellular.",
+        map: "<b>Sales mapping:</b> Identity is the foundation, not the finish. Start with <b>T-SIMsecure</b> (simple attach). Add <b>Ivanti</b> for device posture/compliance. Escalate to <b>SE-led SASE</b> when access, apps, or VPN replacement is required."
+      }
+    ];
+
+    function pickRandomOutcome(){
+      const idx = Math.floor(Math.random() * outcomes.length);
+      return outcomes[idx];
+    }
+
+    outcomeBtn.addEventListener("click", () => {
+      const o = pickRandomOutcome();
+      outcomeTag.textContent = o.tag;
+      outcomeText.textContent = o.text;
+      solutionMap.innerHTML = o.map;
+      outcomeBox.style.display = "block";
+    });
+
+    resetBtn.addEventListener("click", () => {
+      outcomeBox.style.display = "none";
+      statusText.textContent = "Safe training environment — no data is collected.";
+      // Re-open modal after reset to re-run the “behavior moment”
+      openModal();
     });
   </script>
 </body>
